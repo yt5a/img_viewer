@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>include</h1>
+    <input type="text" style="width:90%" id="url">
+    <input type="button" value="Check" id="checkButton">
+    <input type="button" value="Reset" id="resetButton">
+    <br>
+    <input type="checkbox" id="width_check" value="りんご">
+    width:<input type="text" id="width" style="width:50px"><span>px</span>
+    <br>
+    <input type="checkbox" id="height_check" value="りんご">
+    height:<input type="text" id="height" style="width:50px"><span>px</span>
+    <br><label><input type="radio" name="sorts" value="0" checked>URLの長さ→名前順</label>
+    <br><label><input type="radio" name="sorts" value="1">名前順→URLの長さ</label>
+    <br>
+    <label><input type="radio" name="Align" value="0" checked>通常</label>
+    <label><input type="radio" name="Align" value="1">一列</label>
+    <!---<label><input type="radio" name="Align" value="2">横並び</label>-->
+    <div id="img"></div><script>
+      function repeat(str,n){
+        var tx = ""
+        for (var i = 0; i < n; i++) {
+          tx += str
+        }
+        return tx
+      }
+
+      function butotnClick(){
+        get=[]
+        c=0
+        cc=1
+        ox=0
+        tx=url.value
+        //result = tx.match(/\[\d+-\d+\]/);
+        while(cc>=0){
+        console.log(tx.substr(c))
+        result=tx.substr(c).match(/\[(\d+-\d+)\]/)
+        cc=tx.substr(c).search(/\[(\d+-\d+)\]/);
+        console.log(cc)
+          if(cc>=1){
+            range=result[1].split("-")
+            get.push([result[1],range])
+          }else{cc=-1}
+          c+=cc+1
+          ox+=1
+          if(ox>=100){
+            break
+          }
+        }
+
+        url_list=[tx]
+        set_list=[]
+        for (var i=0;i<get.length;i++){
+          for(var q = Number(get[i][1][0]); q < Number(get[i][1][1])+1; q++) {
+            for (var f = 0; f < url_list.length; f++) {
+              photo=url_list[f].replace("["+get[i][0]+"]",q)
+              set_list.push(photo)
+            }
+          }
+          url_list=set_list.concat();
+          set_list=[]
+        }
+
+
+
+        //画像_順番
+        let elements = document.getElementsByName('sorts');
+        let len = elements.length;
+        let checkValue = '';
+
+        for (let i = 0; i < len; i++){
+          if (elements.item(i).checked){
+            checkValue = elements.item(i).value;
+            console.log(checkValue)
+            if(checkValue == "0"){url_list.sort(function(a,b){return a.length - b.length;})}
+            if(checkValue == "1"){url_list.sort()}
+          }
+        }
+
+
+        //画像出力
+        for (var g = 0; g < url_list.length; g++) {
+          img = document.getElementById("img");
+          photo=url_list[g]
+          const input = document.createElement("img");
+          input.setAttribute("src",photo);
+          input.setAttribute("value",Math.random().toString(32).substring(2));
+          input.setAttribute("onerror","hoge(this)")
+          if (document.getElementById("width_check").checked){
+            input.setAttribute("width",width.value+"px");
+          }
+          if (document.getElementById("height_check").checked){
+            input.setAttribute("height",height.value+"px");
+          }
+          input.classList.add(".elements");
+          input.addEventListener('click', function(){
+            for (var l = 0; l < img.childNodes.length; l++) {
+              var pd = img.childNodes[l].getAttribute('value')
+              var cd = this.getAttribute('value')
+              //console.log(String(this.getAttribute('value')))
+              if (pd==cd) {
+                console.log(l)
+                set=document.getElementById("img").childNodes[l]
+                if (scroll_get == false) {
+                    set.style.border = "solid 2px blue";
+                    catchs=set
+                    scroll=l
+                    scroll_get = true
+                }else{
+                  if (catchs==set) {
+                    set.style.border = "0px";
+                    catchs=""
+                    scroll=0
+                    scroll_get = false
+                  }else{
+                    catchs.style.border = "0px"
+                    set.style.border = "solid 2px blue";
+                    catchs=set
+                    scroll=l;
+                  }
+                }
+              }
+            }
+          });
+          img = document.getElementById("img");
+          img.appendChild(input);
+          //window.open(photo, '_blank')
+          console.log(photo)
+        };
+        change_Align()
+      }
+
+
+
+      function hoge(e){
+        console.log(e)
+        e.remove()
+      }
+      function change_width(){
+        if (document.getElementById("width_check").checked){
+          console.log(width.value)
+          var imges = document.getElementById("img").childNodes
+          if(imges.length){
+            for (var i = 0; i < imges.length; i++) {
+              imges[i].style.width = width.value+"px"
+            }
+          }
+        }
+      }
+      function change_height(){
+        if (document.getElementById("height_check").checked){
+          console.log(height.value)
+          var imges = document.getElementById("img").childNodes
+          if(imges.length){
+            for (var i = 0; i < imges.length; i++) {
+              imges[i].style.height = height.value+"px"
+            }
+          }
+        }
+      }
+      function change_Align(){
+        let elements = document.getElementsByName('Align');
+        var imges = document.getElementById("img").childNodes
+        let len = elements.length;
+        let checkValue = '';
+
+        for (let i = 0; i < len; i++){
+          if (elements.item(i).checked){
+            checkValue = elements.item(i).value;
+            console.log(checkValue)
+            if(checkValue == "0"){if(imges.length){
+                for (var b = 0; b < imges.length; b++) {
+                  var height=imges[b].style.height
+                  var width=imges[b].style.width
+                  imges[b].setAttribute("style","");
+                  imges[b].style.height=height
+                  imges[b].style.width=width
+                }
+            }}
+            if(checkValue == "1"){if(imges.length){
+                for (var b = 0; b < imges.length; b++) {
+                  var height=imges[b].style.height
+                  var width=imges[b].style.width
+                  imges[b].setAttribute("style","display: flex;flex-direction:row;");
+                  imges[b].style.height=height
+                  imges[b].style.width=width
+                }
+            }}
+          }
+        }
+      }
+      //img.innerText = get[0]
+      //https://d1y098wpr5md93.cloudfront.net/web/cmn/Attribute0[1-4].png
+      let scroll = 0
+      let scroll_get = false
+
+      let url = document.getElementById('url');
+      let img = document.getElementById('img');
+      let width = document.getElementById('width');
+      let height = document.getElementById('height');
+      url.value="URL"
+      width.onchange = change_width;
+      width.value=100
+      height.onchange = change_height;
+      height.value=200
+
+      let checkButton = document.getElementById('checkButton');
+      checkButton.addEventListener('click',butotnClick);
+      let resetButton = document.getElementById('resetButton');
+      resetButton.addEventListener('click',function(){
+        document.getElementById("img").innerHTML = "";
+        console.log("bug")
+      });
+
+
+      window.addEventListener("keydown",keydown);
+      catchs=""
+      function keydown(event){
+      if (scroll_get == true) {
+        if(event.keyCode==39||event.keyCode==37){
+          if(event.keyCode==39){scroll+=1}
+          if(event.keyCode==37){scroll-=1}
+          var next = document.getElementById("img").childNodes
+          //console.log(next.length)
+          //console.log(scroll)
+          if (scroll<0){scroll=0}
+          if (scroll>=next.length-1){scroll=next.length-1}
+          if (next.length >=1) {
+            next[scroll].scrollIntoView(true)
+            if(catchs==""){
+              next[scroll].style.border = "solid 2px blue";
+              catchs=next[scroll]
+            }else{
+              catchs.style.border = "0px";
+              next[scroll].style.border = "solid 2px blue";
+              catchs=next[scroll]
+            }
+        }
+       }
+      }
+      }
+      </script>
+  </body>
+</html>
