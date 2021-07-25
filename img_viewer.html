@@ -10,16 +10,19 @@
     <input type="button" value="Check" id="checkButton">
     <input type="button" value="Reset" id="resetButton">
     <br>
-    <input type="checkbox" id="width_check" value="りんご">
+    <input type="checkbox" id="width_check">
     width:<input type="text" id="width" style="width:50px"><span>px</span>
     <br>
-    <input type="checkbox" id="height_check" value="りんご">
+    <input type="checkbox" id="height_check">
     height:<input type="text" id="height" style="width:50px"><span>px</span>
     <br><label><input type="radio" name="sorts" value="0" checked>URLの長さ→名前順</label>
     <br><label><input type="radio" name="sorts" value="1">名前順→URLの長さ</label>
     <br>
     <label><input type="radio" name="Align" value="0" checked>通常</label>
     <label><input type="radio" name="Align" value="1">一列</label>
+    <br>
+    エラー画像自動削除:<input type="checkbox" id="delete" checked>
+    <hr>
     <!---<label><input type="radio" name="Align" value="2">横並び</label>-->
     <div id="img"></div><script>
       function repeat(str,n){
@@ -90,7 +93,9 @@
           const input = document.createElement("img");
           input.setAttribute("src",photo);
           input.setAttribute("value",Math.random().toString(32).substring(2));
-          input.setAttribute("onerror","hoge(this)")
+          if (document.getElementById("delete").checked){
+            input.setAttribute("onerror","hoge(this)")
+          }
           if (document.getElementById("width_check").checked){
             input.setAttribute("width",width.value+"px");
           }
