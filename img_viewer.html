@@ -200,6 +200,11 @@
       let scroll_get = false
 
       let url = document.getElementById('url');
+      url.addEventListener('keypress',function(e){
+        if (e.keyCode === 13) {
+          butotnClick()
+        }
+      });
       let img = document.getElementById('img');
       let width = document.getElementById('width');
       let height = document.getElementById('height');
