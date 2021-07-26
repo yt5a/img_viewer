@@ -15,15 +15,16 @@
     <br>
     <input type="checkbox" id="height_check">
     height:<input type="text" id="height" style="width:50px"><span>px</span>
-    <br><label><input type="radio" name="sorts" value="0" checked>URLの長さ→名前順</label>
-    <br><label><input type="radio" name="sorts" value="1">名前順→URLの長さ</label>
+    <br>
+    <label><input type="radio" name="sorts" value="0" checked>URLの長さ→名前順</label>
+    <label><input type="radio" name="sorts" value="1">名前順→URLの長さ</label>
     <br>
     <label><input type="radio" name="Align" value="0" checked>通常</label>
     <label><input type="radio" name="Align" value="1">一列</label>
     <br>
     <label><input type="radio" name="files" value="0" checked>画像</label>
     <label><input type="radio" name="files" value="1">html</label>
-    <br>エラー時自動削除:<input type="checkbox" id="delete" checked>
+    <br>エラー時自動削除<input type="checkbox" id="delete" checked>
     <hr>
     <!---
     <embed src="https://ahentai.top/index.php?route=comic/readOnline&comic_id=50848&host_id=0&page=1&gallery_brightness=100&gallery_contrast=100"height="200px">
@@ -109,6 +110,7 @@
             input.setAttribute("height",height.value+"px");
           }
           input.classList.add(".elements");
+          input.style.border = "solid 3px white";
           input.addEventListener('click', function(){
             for (var l = 0; l < img.childNodes.length; l++) {
               var pd = img.childNodes[l].getAttribute('value')
@@ -118,19 +120,19 @@
                 console.log(l)
                 set=document.getElementById("img").childNodes[l]
                 if (scroll_get == false) {
-                    set.style.border = "solid 2px blue";
+                    set.style.border = "solid 3px red";
                     catchs=set
                     scroll=l
                     scroll_get = true
                 }else{
                   if (catchs==set) {
-                    set.style.border = "0px";
+                    set.style.border = "solid 3px white";
                     catchs=""
                     scroll=0
                     scroll_get = false
                   }else{
-                    catchs.style.border = "0px"
-                    set.style.border = "solid 2px blue";
+                    catchs.style.border = "solid 3px white"
+                    set.style.border = "solid 3px red";
                     catchs=set
                     scroll=l;
                   }
@@ -188,7 +190,7 @@
                 for (var b = 0; b < imges.length; b++) {
                   var height=imges[b].style.height
                   var width=imges[b].style.width
-                  imges[b].setAttribute("style","");
+                  imges[b].setAttribute("style","border:solid 3px white");
                   imges[b].style.height=height
                   imges[b].style.width=width
                 }
@@ -197,7 +199,7 @@
                 for (var b = 0; b < imges.length; b++) {
                   var height=imges[b].style.height
                   var width=imges[b].style.width
-                  imges[b].setAttribute("style","display: flex;flex-direction:row;");
+                  imges[b].setAttribute("style","display: flex;flex-direction:row;border:solid 3px white");
                   imges[b].style.height=height
                   imges[b].style.width=width
                 }
@@ -263,11 +265,11 @@
           if (next.length >=1) {
             next[scroll].scrollIntoView(true)
             if(catchs==""){
-              next[scroll].style.border = "solid 2px blue";
+              next[scroll].style.border = "solid 3px red";
               catchs=next[scroll]
             }else{
-              catchs.style.border = "0px";
-              next[scroll].style.border = "solid 2px blue";
+              catchs.style.border = "solid 3px white";
+              next[scroll].style.border = "solid 3px red";
               catchs=next[scroll]
             }
         }
