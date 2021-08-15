@@ -48,14 +48,26 @@
         //result = tx.match(/\[\d+-\d+\]/);
         while(cc>=0){
         console.log(tx.substr(c))
-        result=tx.substr(c).match(/\[(\d+-\d+)\]/)
-        cc=tx.substr(c).search(/\[(\d+-\d+)\]/);
+        //result=tx.substr(c).match(/\[(\d+-\d+)\]/)
+        result=tx.substr(c).match(/\[([\d\,\-]+)\]/)
+        //cc=tx.substr(c).search(/\[(\d+-\d+)\]/);
+        cc=tx.substr(c).search(/\[([\d\,\-]+)\]/);
         console.log(cc)
           if(cc>=1){
-            range=result[1].split("-")
+            console.log(result[1])
+            setter=result[1].split(",")
+            var range=[]
+            for (const se of setter) {
+              if (se.split("-").length>1) {
+                range.push(se.split("-"))
+              }else{
+                range.push([se,se])
+              }
+            }
             get.push([result[1],range])
           }else{cc=-1}
           c+=cc+1
+
           ox+=1
           if(ox>=100){
             break
@@ -65,10 +77,16 @@
         url_list=[tx]
         set_list=[]
         for (var i=0;i<get.length;i++){
-          for(var q = Number(get[i][1][0]); q < Number(get[i][1][1])+1; q++) {
-            for (var f = 0; f < url_list.length; f++) {
-              photo=url_list[f].replace("["+get[i][0]+"]",q)
-              set_list.push(photo)
+          console.log(get[i])
+          //for(var q = Number(get[i][1][0]); q < Number(get[i][1][1])+1; q++) {
+          for (const em of get[i][1]) {
+            console.log(em)
+            for(var q = Number(em[0]); q < Number(em[1])+1; q++) {
+              for (var f = 0; f < url_list.length; f++) {
+                photo=url_list[f].replace("["+get[i][0]+"]",q)
+                console.log(photo)
+                set_list.push(photo)
+              }
             }
           }
           url_list=set_list.concat();
@@ -215,7 +233,6 @@
         for (let i = 0; i < len; i++){
           if (elements.item(i).checked){
             checkValue = elements.item(i).value;
-            console.log(checkValue)
             if(checkValue == "0"){return "img"}
             if(checkValue == "1"){return "embed"}
           }
