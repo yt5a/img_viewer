@@ -23,7 +23,8 @@
     <label><input type="radio" name="Align" value="1">一列</label>
     <br>
     <label><input type="radio" name="files" value="0" checked>画像</label>
-    <label><input type="radio" name="files" value="1">html</label>
+    <label><input type="radio" name="files" value="1">音楽</label>
+    <label><input type="radio" name="files" value="2">html</label>
     <br>エラー時自動削除<input type="checkbox" id="delete" checked>
     <hr>
     <!---
@@ -49,13 +50,14 @@
         while(cc>=0){
         console.log(tx.substr(c))
         //result=tx.substr(c).match(/\[(\d+-\d+)\]/)
-        result=tx.substr(c).match(/\[([\d\,\-]+)\]/)
+        result=tx.substr(c).match(/\[([\d\,\-]+)\]|\[([A-Za-z]-[A-Za-z])\]/)
+        console.log(result)
         //cc=tx.substr(c).search(/\[(\d+-\d+)\]/);
-        cc=tx.substr(c).search(/\[([\d\,\-]+)\]/);
+        cc=tx.substr(c).search(/\[([\d\,\-]+)\]|\[([A-Za-z]-[A-Za-z])\]/);
         console.log(cc)
           if(cc>=1){
-            console.log(result[1])
-            setter=result[1].split(",")
+            console.log(result[0])
+            setter=result[0].replace("[","").replace("]","").split(",")
             var range=[]
             for (const se of setter) {
               if (se.split("-").length>1) {
@@ -64,7 +66,7 @@
                 range.push([se,se])
               }
             }
-            get.push([result[1],range])
+            get.push([result[0].replace("[","").replace("]",""),range])
           }else{cc=-1}
           c+=cc+1
 
@@ -77,17 +79,38 @@
         url_list=[tx]
         set_list=[]
         for (var i=0;i<get.length;i++){
-          console.log(get[i])
+          console.log(get)
           //for(var q = Number(get[i][1][0]); q < Number(get[i][1][1])+1; q++) {
           for (const em of get[i][1]) {
             console.log(em)
-            for(var q = Number(em[0]); q < Number(em[1])+1; q++) {
-              for (var f = 0; f < url_list.length; f++) {
-                photo=url_list[f].replace("["+get[i][0]+"]",q)
-                console.log(photo)
-                set_list.push(photo)
+
+            if (em[0].match(/\d/gi)) {
+              for(var q = Number(em[0]); q < Number(em[1])+1; q++) {
+                for (var f = 0; f < url_list.length; f++) {
+                  photo=url_list[f].replace("["+get[i][0]+"]",q)
+                  //photo=photo.replace("{"+i+"}",q)
+                  photo=photo.split("{"+i+"}").join(q)
+                  set_list.push(photo)
+                }
               }
             }
+
+            else if(em[0].match(/[A-Za-z]/gi)){
+              const alp = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+              const al = "abcdefghijklmnopqrstuvwxyz";
+              var AZ = alp
+              if (al.indexOf(em[0]) !== -1) {AZ=al}
+
+              for(var q = AZ.indexOf(em[0]); q < AZ.indexOf(em[1])+1; q++) {
+                for (var f = 0; f < url_list.length; f++) {
+                  photo=url_list[f].replace("["+get[i][0]+"]",AZ.charAt(q))
+                  photo=photo.split("{"+i+"}").join(AZ.charAt(q))
+                  //photo=photo.replace("{"+i+"}",AZ.charAt(q))
+                  set_list.push(photo)
+                }
+              }
+            }
+
           }
           url_list=set_list.concat();
           set_list=[]
@@ -117,6 +140,8 @@
           file_get=file_type()
           const input = document.createElement(file_get);
           input.setAttribute("src",photo);
+          input.setAttribute("controls","");
+          input.addEventListener('dblclick', function(){window.open(this.src, '_blank')})
           input.setAttribute("value",Math.random().toString(32).substring(2));
           if (document.getElementById("delete").checked){
             input.setAttribute("onerror","hoge(this)")
@@ -161,7 +186,7 @@
           img = document.getElementById("img");
           img.appendChild(input);
           //window.open(photo, '_blank')
-          console.log(photo)
+          //console.log(photo)
         };
         change_Align()
       }
@@ -169,7 +194,7 @@
 
 
       function hoge(e){
-        console.log(e)
+        //console.log(e)
         e.remove()
       }
       function change_width(){
@@ -234,7 +259,8 @@
           if (elements.item(i).checked){
             checkValue = elements.item(i).value;
             if(checkValue == "0"){return "img"}
-            if(checkValue == "1"){return "embed"}
+            if(checkValue == "1"){return "audio"}
+            if(checkValue == "2"){return "embed"}
           }
         }
       }
