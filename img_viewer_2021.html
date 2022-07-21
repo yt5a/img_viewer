@@ -160,88 +160,82 @@
 
 
         //画像出力
-        url_c = 0
-        url_pic = 1000
-        //img_set()
-
-        b_list = url_list.length//前回の要素数
-        time_get = 0//現在の要素数
-        time_c = 0//現在の待機数
-        setTimeout(relord_time,1000);
-        //})();
-        //change_Align()
-      }
-
-      function img_set(){
-        if (url_pic >= url_list.length) {
-          url_pic = url_list.length - url_c
-        }
-        document.getElementById("num").innerHTML = "【" + url_list.length + "/"+url_c+"】"+b_list;
-
-        for (var g = url_c; g < url_c + url_pic; g++) {
-          img = document.getElementById(img);
-          photo=url_list[g]
-          file_get=file_type()
-
-          //画像生成
-          const input = document.createElement(file_get);
-          input.setAttribute("src",photo);
-          input.setAttribute("controls","");
-          input.addEventListener('dblclick', function(){window.open(this.src, '_blank')})
-          input.setAttribute("value",Math.random().toString(32).substring(2));
-          if (document.getElementById("delete").checked){
-            input.setAttribute("onerror","hoge(this)")
-          }
-          if (document.getElementById("width_check").checked){
-            input.setAttribute("width",width.value+"px");
-          }
-          if (document.getElementById("height_check").checked){
-            input.setAttribute("height",height.value+"px");
-          }
-          input.classList.add(".elements");
-          input.style.border = "solid 3px white";
-          input.addEventListener('click', function(){
-            for (var l = 0; l < img.childNodes.length; l++) {
-              var pd = img.childNodes[l].getAttribute('value')
-              var cd = this.getAttribute('value')
-              //console.log(String(this.getAttribute('value')))
-              if (pd==cd) {
-                console.log(l)
-                set=document.getElementById("img").childNodes[l]
-                if (scroll_get == false) {
-                    set.style.border = "solid 3px red";
-                    catchs=set
-                    scroll=l
-                    scroll_get = true
-                }else{
-                  if (catchs==set) {
-                    set.style.border = "solid 3px white";
-                    catchs=""
-                    scroll=0
-                    scroll_get = false
+        document.getElementById("num").innerHTML = url_list.length+"/"+0;
+        //(async () => {
+          for (var g = 0; g < url_list.length; g++) {
+            if (g%100==0) {
+              console.log(g)
+              //await sleep(1000);
+              /*if(end==true){
+                end=false;
+                break
+              }*/
+              document.getElementById("num").innerHTML = url_list.length+"/"+g;
+            }
+            img = document.getElementById(img);
+            photo=url_list[g]
+            file_get=file_type()
+            const input = document.createElement(file_get);
+            input.setAttribute("src",photo);
+            input.setAttribute("controls","");
+            input.addEventListener('dblclick', function(){window.open(this.src, '_blank')})
+            input.setAttribute("value",Math.random().toString(32).substring(2));
+            if (document.getElementById("delete").checked){
+              input.setAttribute("onerror","hoge(this)")
+            }
+            if (document.getElementById("width_check").checked){
+              input.setAttribute("width",width.value+"px");
+            }
+            if (document.getElementById("height_check").checked){
+              input.setAttribute("height",height.value+"px");
+            }
+            input.classList.add(".elements");
+            input.style.border = "solid 3px white";
+            input.addEventListener('click', function(){
+              for (var l = 0; l < img.childNodes.length; l++) {
+                var pd = img.childNodes[l].getAttribute('value')
+                var cd = this.getAttribute('value')
+                //console.log(String(this.getAttribute('value')))
+                if (pd==cd) {
+                  console.log(l)
+                  set=document.getElementById("img").childNodes[l]
+                  if (scroll_get == false) {
+                      set.style.border = "solid 3px red";
+                      catchs=set
+                      scroll=l
+                      scroll_get = true
                   }else{
-                    catchs.style.border = "solid 3px white"
-                    set.style.border = "solid 3px red";
-                    catchs=set
-                    scroll=l;
+                    if (catchs==set) {
+                      set.style.border = "solid 3px white";
+                      catchs=""
+                      scroll=0
+                      scroll_get = false
+                    }else{
+                      catchs.style.border = "solid 3px white"
+                      set.style.border = "solid 3px red";
+                      catchs=set
+                      scroll=l;
+                    }
                   }
                 }
               }
-            }
-          });
-          img = document.getElementById("img");
-          img.appendChild(input);
-
-        };
+            });
+            img = document.getElementById("img");
+            img.appendChild(input);
+            //window.open(photo, '_blank')
+            //console.log(photo)
+          };
+          document.getElementById("num").innerHTML = ""
+        //})();
+        change_Align()
       }
 
 
-      //写真削除
+
       function hoge(e){
+        //console.log(e)
         e.remove()
       }
-
-　　　　//-----写真の幅
       function change_width(){
         if (document.getElementById("width_check").checked){
           console.log(width.value)
@@ -309,8 +303,11 @@
           }
         }
       }
+      //img.innerText = get[0]
+      //https://d1y098wpr5md93.cloudfront.net/web/cmn/Attribute0[1-4].png
       let scroll = 0
       let scroll_get = false
+      //let end = false
 
       let url = document.getElementById('url');
       url.addEventListener('keypress',function(e){
@@ -339,55 +336,31 @@
       });
 
 
-      //キー入力
       window.addEventListener("keydown",keydown);
       catchs=""
       function keydown(event){
-        if (scroll_get == true) {
-          if(event.keyCode==39||event.keyCode==37){
-            if(event.keyCode==39){scroll+=1}
-            if(event.keyCode==37){scroll-=1}
-            var next = document.getElementById("img").childNodes
-            if (scroll<0){scroll=0}
-            if (scroll>=next.length-1){scroll=next.length-1}
-            if (next.length >=1) {
-              next[scroll].scrollIntoView(true)
-              if(catchs==""){
-                next[scroll].style.border = "solid 3px red";
-                catchs=next[scroll]
-              }else{
-                catchs.style.border = "solid 3px white";
-                next[scroll].style.border = "solid 3px red";
-                catchs=next[scroll]
-              }
+      if (scroll_get == true) {
+        if(event.keyCode==39||event.keyCode==37){
+          if(event.keyCode==39){scroll+=1}
+          if(event.keyCode==37){scroll-=1}
+          var next = document.getElementById("img").childNodes
+          //console.log(next.length)
+          //console.log(scroll)
+          if (scroll<0){scroll=0}
+          if (scroll>=next.length-1){scroll=next.length-1}
+          if (next.length >=1) {
+            next[scroll].scrollIntoView(true)
+            if(catchs==""){
+              next[scroll].style.border = "solid 3px red";
+              catchs=next[scroll]
+            }else{
+              catchs.style.border = "solid 3px white";
+              next[scroll].style.border = "solid 3px red";
+              catchs=next[scroll]
             }
-          }
         }
+       }
       }
-
-      function relord_time(){
-        console.log(time_get,time_c)
-        time_get= document.getElementById("img").childElementCount
-
-        if (time_get==b_list){
-          time_c+=1
-        }else{
-          time_c=0}
-        b_list=time_get//取得数の更新
-
-        if (time_c >= 3) {
-          if (url_c <= url_list.length) {
-            img_set()
-            url_c += url_pic
-            time_c = 0
-            setTimeout(relord_time,1000);
-          }else{
-            document.getElementById("num").innerHTML = "【" + url_list.length + "/" + url_list.length + "】" + b_list;
-            console.log("END")
-          }
-        }else{
-          setTimeout(relord_time,1000);
-        }
       }
       </script>
   </body>
