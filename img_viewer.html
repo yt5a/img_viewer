@@ -4,11 +4,14 @@
     <meta charset="utf-8">
     <title></title>
   </head>
-  <body>
+  <body onload="start()">
     <h1>include</h1>
     <input type="text" style="width:90%" id="url">
     <input type="button" value="Check" id="checkButton">
     <input type="button" value="Reset" id="resetButton">
+    <br>
+    <select id="logs"></select>
+    <input type="button" value="×" onclick="log_Delete()">
     <br>
     <input type="checkbox" id="width_check">
     width:<input type="text" id="width" style="width:50px"><span>px</span>
@@ -19,8 +22,10 @@
     <label><input type="radio" name="sorts" value="0" checked>URLの長さ→名前順</label>
     <label><input type="radio" name="sorts" value="1">名前順→URLの長さ</label>
     <br>
-    <label><input type="radio" name="Align" value="0" checked>通常</label>
-    <label><input type="radio" name="Align" value="1">一列</label>
+    <label><input type="radio" name="Align" value="0" onchange="change_Align()" checked>通常</label>
+    <label><input type="radio" name="Align" value="1" onchange="change_Align()">一列</label>
+    <label><input type="radio" name="Align" value="2" onchange="change_Align()">2ページ</label>
+    <label><input type="radio" name="Align" value="3" onchange="change_Align()">2ページ+1</label>
     <br>
     <label><input type="radio" name="files" value="0" checked>画像</label>
     <label><input type="radio" name="files" value="1">音楽</label>
@@ -52,6 +57,10 @@
         cc=1
         ox=0
         tx=url.value
+
+        logs[tx] = 0;
+        localStorage.setItem('log',JSON.stringify(logs));
+        console.log(JSON.parse(localStorage.getItem('log')));
         //result = tx.match(/\[\d+-\d+\]/);
         while(cc>=0){
         console.log(tx.substr(c))
@@ -173,12 +182,13 @@
       }
 
       function img_set(){
+        e = 0
         if (url_pic >= url_list.length) {
-          url_pic = url_list.length - url_c
+          e = url_list.length - url_c - url_pic
         }
         document.getElementById("num").innerHTML = "【" + url_list.length + "/"+url_c+"】"+b_list;
 
-        for (var g = url_c; g < url_c + url_pic; g++) {
+        for (var g = url_c; g < url_c + url_pic - e; g++) {
           img = document.getElementById(img);
           photo=url_list[g]
           file_get=file_type()
@@ -231,8 +241,8 @@
           });
           img = document.getElementById("img");
           img.appendChild(input);
-
         };
+        change_Align()
       }
 
 
@@ -265,6 +275,8 @@
         }
       }
       function change_Align(){
+        document.querySelectorAll("P").forEach(e => e.remove());
+
         let elements = document.getElementsByName('Align');
         var imges = document.getElementById("img").childNodes
         let len = elements.length;
@@ -283,6 +295,7 @@
                   imges[b].style.width=width
                 }
             }}
+
             if(checkValue == "1"){if(imges.length){
                 for (var b = 0; b < imges.length; b++) {
                   var height=imges[b].style.height
@@ -291,6 +304,36 @@
                   imges[b].style.height=height
                   imges[b].style.width=width
                 }
+            }}
+
+            if(checkValue == "2"){if(imges.length){
+              for (var b = 0; b < imges.length; b++) {
+                var height=imges[b].style.height
+                var width=imges[b].style.width
+                imges[b].style.height=height
+                imges[b].style.width=width
+                if ((b + 1) % 3 == 0) {
+                  imges[b].setAttribute("style","float: right;clear: both;border:solid 3px white");
+                  imges[b].after(document.createElement('p'));
+                }else{
+                  imges[b].setAttribute("style","float: right;border:solid 3px white");
+                }
+              }
+            }}
+
+            if(checkValue == "3"){if(imges.length){
+              for (var b = 0; b < imges.length; b++) {
+                var height=imges[b].style.height
+                var width=imges[b].style.width
+                imges[b].style.height=height
+                imges[b].style.width=width
+                if ((b + 2) % 3 == 0) {
+                  imges[b].setAttribute("style","float: right;clear: both;border:solid 3px white");
+                  imges[b].after(document.createElement('p'));
+                }else{
+                  imges[b].setAttribute("style","float: right;border:solid 3px white");
+                }
+              }
             }}
           }
         }
@@ -309,6 +352,25 @@
           }
         }
       }
+
+      function log_Delete(){
+        var log_set = document.getElementById("logs")
+        console.log(log_set.value)
+        for (let i = 0 ; i < log_set.children.length ; i++){
+          console.log(log_set[i].value);
+          if (log_set[i].value == log_set.value) {
+            delete logs[log_set.value];
+            localStorage.setItem('log',JSON.stringify(logs));
+            log_set[i].remove()
+          }
+        }
+      };
+
+      //
+      let set_time;
+
+      var logs;
+
       let scroll = 0
       let scroll_get = false
 
@@ -334,7 +396,7 @@
         //butotnClick()
         document.getElementById("img").innerHTML = "";
         document.getElementById("num").innerHTML = "";
-        //end = true
+        clearTimeout(set_time);
         console.log("bug")
       });
 
@@ -345,11 +407,19 @@
       function keydown(event){
         if (scroll_get == true) {
           if(event.keyCode==39||event.keyCode==37){
-            if(event.keyCode==39){scroll+=1}
-            if(event.keyCode==37){scroll-=1}
             var next = document.getElementById("img").childNodes
-            if (scroll<0){scroll=0}
-            if (scroll>=next.length-1){scroll=next.length-1}
+
+            if(event.keyCode==39){scroll+=1;
+              if (scroll>=next.length-1){scroll=next.length-1}
+              if (next[scroll].tagName == "P"){scroll+=1};
+              if (next[scroll].tagName == "P"){scroll-=2};
+            }
+            if(event.keyCode==37){scroll-=1;
+              if (scroll < 0){scroll=0}
+              if (next[scroll].tagName == "P"){scroll-=1};
+            }
+            console.log(scroll)
+
             if (next.length >=1) {
               next[scroll].scrollIntoView(true)
               if(catchs==""){
@@ -380,15 +450,86 @@
             img_set()
             url_c += url_pic
             time_c = 0
-            setTimeout(relord_time,1000);
+            set_time = setTimeout(relord_time,1000);
           }else{
             document.getElementById("num").innerHTML = "【" + url_list.length + "/" + url_list.length + "】" + b_list;
             console.log("END")
           }
         }else{
-          setTimeout(relord_time,1000);
+          set_time = setTimeout(relord_time,1000);
         }
       }
+
+      //メモリ
+      function start() {
+        logs = localStorage.getItem('log');
+        var radio = localStorage.getItem('radio');
+        var check = localStorage.getItem('check');
+        var text = localStorage.getItem('text');
+
+        if (logs){
+          logs = JSON.parse(logs)
+          Object.keys(logs).forEach(function(key){
+            var new_element = document.createElement('option');
+            new_element.value = key;
+            new_element.innerHTML = key;
+            var log_set = document.getElementById("logs")
+            log_set.appendChild(new_element)
+            log_set.addEventListener('change',function(){console.log(log_set.value);url.value = log_set.value});
+          });
+        }else{
+          logs = {};
+        }
+
+        //設定メモリ
+        if (radio){
+          radio = JSON.parse(radio)
+          console.log(Object.keys(radio))
+          Object.keys(radio).forEach(key => document.getElementsByName(key)[Number(radio[key])].checked = true);
+        }
+
+        if (check){
+          check = JSON.parse(check)
+          console.log(Object.keys(check))
+          Object.keys(check).forEach(key => document.getElementById(key).checked = check[key]);
+        }
+
+        if (text){
+          text = JSON.parse(text)
+          console.log(Object.keys(text))
+          Object.keys(text).forEach(key => document.getElementById(key).value = text[key]);
+        }
+      }
+
+
+      //リロード時
+      window.addEventListener('unload', function () {
+        //input
+        var radio_memory = {}
+        var check_memory = {}
+        var text_memory = {}
+
+        var inp = document.querySelectorAll("input");
+        for (let k = 0; k < inp.length; k++){
+          if (inp[k].type == "radio") {
+            if (inp[k].checked) {
+              radio_memory[String(inp[k].name)] = inp[k].value;
+            }
+          }
+          if(inp[k].type == "checkbox"){
+              check_memory[String(inp[k].id)] = inp[k].checked;
+          }
+          if(inp[k].type == "text"){
+              text_memory[String(inp[k].id)] = inp[k].value;
+          }
+        }
+
+        localStorage.setItem('radio',JSON.stringify(radio_memory));
+        localStorage.setItem('check',JSON.stringify(check_memory));
+        localStorage.setItem('text',JSON.stringify(text_memory));
+
+
+      });
       </script>
   </body>
 </html>
